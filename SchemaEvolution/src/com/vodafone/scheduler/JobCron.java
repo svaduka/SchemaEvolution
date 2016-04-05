@@ -10,6 +10,7 @@ public class JobCron {
 		int abc=10;
 		int test=123;
 		int saitest=234;
+		String str = "TestString";
 
 	}
 
