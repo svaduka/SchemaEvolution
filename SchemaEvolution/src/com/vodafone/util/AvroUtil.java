@@ -2,6 +2,7 @@ package com.vodafone.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.json.JSONArray;
@@ -40,22 +41,37 @@ public class AvroUtil {
 		avscSchema.put(SEConstants.AVROConstants.SOURCE_NAME, tableMetaData.getSOURCE_NAME());
 		avscSchema.put(SEConstants.AVROConstants.NAMESPACE, tableMetaData.getSCHEMA_NAME());
 		avscSchema.put(SEConstants.AVROConstants.TABLE_NAME, tableMetaData.getTABLE_NAME());
-		
-		
-		
-		avscSchema.put(SEConstants.AVROConstants.FIELDS, tableMetaData.getColumns());
+		JSONArray fields=createFieldsFromTableMetaDataColumns(tableMetaData);
+		avscSchema.put(SEConstants.AVROConstants.FIELDS, fields);
 		
 		return avscSchema;
 	}
 	
-	public static JSONArray createFieldsFromTableMetaDataColumns(final TableMetaData tableMetaData)
+	public static JSONArray createFieldsFromTableMetaDataColumns(final TableMetaData tableMetaData) throws JSONException
 	{
-		return null;
+		final Set<ColumnInfo> columns=tableMetaData.getColumns();
+		JSONArray fields=new JSONArray();
+		JSONObject field=null;
+		for (ColumnInfo column : columns) {
+			field=createFieldFromTableMetaDataColumn(column);
+			fields.put(field);
+		}
+		return fields;
 	}
 	
-	public static JSONObject createFieldFromTableMetaDataColumn(final ColumnInfo column)
+	public static JSONObject createFieldFromTableMetaDataColumn(final ColumnInfo column) throws JSONException
+	
 	{
-		return null;
+		JSONObject field =new JSONObject();
+		field.put(SEConstants.AVROConstants.FIELD_NAME, column.getColumnName());
+		field.put(SEConstants.AVROConstants.FIELD_COLUMNNAME, column.getColumnName());
+		field.put(SEConstants.AVROConstants.FIELD_COLUMNID, column.getColumnId());
+		field.put(SEConstants.AVROConstants.FIELD_DATALENGTH, column.getDataLength());
+		field.put(SEConstants.AVROConstants.FIELD_COLUMNNAME, column.getColumnName());
+		field.put(SEConstants.AVROConstants.FIELD_DATASCALE, column.getDataScale());
+		field.put(SEConstants.AVROConstants.FIELD_DATATYPE, column.getDataType());
+		field.put(SEConstants.AVROConstants.FIELD_FORMAT, column.getFormat());
+		return field;
 	}
 	
 }

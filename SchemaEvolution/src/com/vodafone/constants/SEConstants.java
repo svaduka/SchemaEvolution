@@ -55,6 +55,17 @@ public interface SEConstants {
 		public static final String FIELD_DEFAULT="default";
 		
 		
+		//Columns
+		public static final String FIELD_SOURCENAME="sourceName";
+		public static final String FIELD_SCHEMANAME="schemaName";
+		public static final String FIELD_TABLENAME="tableName";
+		public static final String FIELD_COLUMNNAME="columnName";
+		public static final String FIELD_DATATYPE="dataType";
+		public static final String FIELD_DATALENGTH="dataLength";
+		public static final String FIELD_DATASCALE="dataScale";
+		public static final String FIELD_FORMAT="format";
+		public static final String FIELD_PRIMARYKEY="primaryKey";
+		public static final String FIELD_COLUMNID="columnId";		
 		
 	}
 	
