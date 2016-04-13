@@ -39,4 +39,23 @@ public interface SEConstants {
 	
 	public static final int ONE =1;
 	
+	
+	public interface AVROConstants{
+		
+		public static final String TYPE="type";
+		public static final String TYPE_RECORD="record";
+		public static final String TABLE_NAME="name";
+		public static final String SOURCE_NAME="source";
+		public static final String NAMESPACE="namespace";
+		public static final String DOC="doc";
+		public static final String FIELDS="fields";
+		public static final String FIELD_NAME="name";
+		public static final String FIELD_DOC="doc";
+		public static final String FIELD_TYPE="type";
+		public static final String FIELD_DEFAULT="default";
+		
+		
+		
+	}
+	
 }
