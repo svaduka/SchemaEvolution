@@ -38,16 +38,18 @@ public class FileUtil {
 		{
 				
 			final String line=lines.get(SEConstants.ZERO);
-			String[] tokens = StringUtils.splitByWholeSeparatorPreserveAllTokens(line, SEConstants.SEPERATOR_PIPE);
+			String[] tokens = StringUtils.splitPreserveAllTokens(line, SEConstants.SEPERATOR_PIPE);
 			
 			tblMD = new TableMetaData();
 			
-			tblMD.setSOURCE_NAME(StringUtils.isEmpty(tokens[0])?tokens[0]:SEConstants.EMPTY);
-			tblMD.setSCHEMA_NAME(StringUtils.isEmpty(tokens[1])?tokens[1]:SEConstants.EMPTY);
-			tblMD.setTABLE_NAME(StringUtils.isEmpty(tokens[2])?tokens[2]:SEConstants.EMPTY);
+			tblMD.setSOURCE_NAME(!StringUtils.isEmpty(tokens[0])?tokens[0]:SEConstants.EMPTY);
+			tblMD.setSCHEMA_NAME(!StringUtils.isEmpty(tokens[1])?tokens[1]:SEConstants.EMPTY);
+			tblMD.setTABLE_NAME(!StringUtils.isEmpty(tokens[2])?tokens[2]:SEConstants.EMPTY);
 			Set<ColumnInfo> hashSet = new HashSet<ColumnInfo>();
-			for (String strLine : lines) 
+			String strLine=null;
+			for (int i=1;i<lines.size();i++) 
 			{
+				strLine=lines.get(i);
 			ColumnInfo columnInfo = FileUtil.createColumnInfo(strLine);
 			hashSet.add(columnInfo);
 			}
@@ -60,7 +62,7 @@ public class FileUtil {
 	
 	public static ColumnInfo createColumnInfo(String line) {
 		
-		String[] columns = StringUtils.splitByWholeSeparator(line, SEConstants.SEPERATOR_PIPE);
+		String[] columns = StringUtils.splitPreserveAllTokens(line, "|");
 		ColumnInfo columnInfo = null;
 		if(!StringUtils.isEmpty(line))
 		{

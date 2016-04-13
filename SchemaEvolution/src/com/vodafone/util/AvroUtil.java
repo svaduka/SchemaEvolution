@@ -15,7 +15,7 @@ import com.vodafone.pojo.TableMetaData;
 
 public class AvroUtil {
 
-	public static Schema convertMetaFileToAVSC(final String metaFileLocationWithName) throws FileNotFoundException, IOException {
+	public static Schema convertMetaFileToAVSC(final String metaFileLocationWithName) throws FileNotFoundException, IOException, JSONException {
 		
 		TableMetaData tableMetaData=FileUtil.readMetaFile(metaFileLocationWithName);
 		
@@ -24,10 +24,10 @@ public class AvroUtil {
 		return tableSchema;
 	}
 	
-	public static Schema convertTableMetaDataToAVSC(final TableMetaData tableMetaData) {
+	public static Schema convertTableMetaDataToAVSC(final TableMetaData tableMetaData) throws JSONException {
 		
-		final String avscSchema=null;
-		Schema avroSchema=new Schema.Parser().parse(avscSchema);
+		final JSONObject avscSchema=createJsonSchemaFromTableMetaData(tableMetaData);
+		Schema avroSchema=new Schema.Parser().parse(avscSchema.toString());
 		
 		return avroSchema;
 		
@@ -69,9 +69,24 @@ public class AvroUtil {
 		field.put(SEConstants.AVROConstants.FIELD_DATALENGTH, column.getDataLength());
 		field.put(SEConstants.AVROConstants.FIELD_COLUMNNAME, column.getColumnName());
 		field.put(SEConstants.AVROConstants.FIELD_DATASCALE, column.getDataScale());
+		field.put(SEConstants.AVROConstants.FIELD_TYPE, getType(column.getDataType()));
 		field.put(SEConstants.AVROConstants.FIELD_DATATYPE, column.getDataType());
 		field.put(SEConstants.AVROConstants.FIELD_FORMAT, column.getFormat());
 		return field;
+	}
+	
+	public static String getType(final String type)
+	{
+		String returnType=null;
+		
+		if(type.equalsIgnoreCase("VARCHAR")){
+			returnType="string";
+		}else if(type.equalsIgnoreCase("DATE")){
+			returnType="string";
+		}else if(type.equalsIgnoreCase("TIMESTAMP")){
+			returnType="string";
+		}
+		return returnType;
 	}
 	
 }
