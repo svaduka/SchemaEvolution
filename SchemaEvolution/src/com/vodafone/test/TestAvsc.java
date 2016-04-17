@@ -1,12 +1,18 @@
 package com.vodafone.test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.avro.Schema;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 
 import com.vodafone.util.AvroUtil;
+import com.vodafone.util.FileUtil;
 
 public class TestAvsc {
 
@@ -18,11 +24,38 @@ public class TestAvsc {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, JSONException {
 
-		final String metaFileLocationWithName="D:\\Naveen\\Datasets\\SchemaEvolution\\20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL.meta";
+		final String inboxLocation="D:\\Naveen\\Datasets\\SchemaEvolution\\inbox";
+		Map<String, List<String>> groupedFiles=FileUtil.groupSimilarFiles(inboxLocation, "ctl");
 		
-		Schema schema=AvroUtil.convertMetaFileToAVSC(metaFileLocationWithName);
+		System.out.println(groupedFiles);
+//		
+//		Schema schemaAvroUtil.convertMetaFileToAVSC(metaFileLocationWithName);
+//		
+//		System.out.println(schema.toString());
+//		
+//		File f=new File("D:\\Naveen\\Datasets\\SchemaEvolution\\20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL.ctl");
+//		
+//		final String lookUpName="20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL";
+//		File[] files=f.getParentFile().listFiles(new FilenameFilter() {
+//			
+//			@Override
+//			public boolean accept(File dir, String name) {
+//				// TODO Auto-generated method stub
+//				return StringUtils.indexOf(name, lookUpName)!=-1;
+//			}
+//		});	
+//		
+//		for (File file : files) {
+//			System.out.println(file.getAbsolutePath());
+//		}
+//		
+//		
 		
-		System.out.println(schema.toString());
+		
+		
+//		final String fileName="20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL.ctl";
+		
+//		System.out.println(fileName.substring(0, fileName.lastIndexOf(".")));
 	}
 
 }

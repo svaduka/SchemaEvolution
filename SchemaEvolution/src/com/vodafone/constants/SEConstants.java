@@ -1,15 +1,24 @@
 package com.vodafone.constants;
 
 public interface SEConstants {
+
+	public static final int ONE =1;
 	
 	// Property file keys
 	public static final String BASE_LOC = "BASE_LOC";
+	public static final String INBOX = "INBOX";
+	
+	// File Extensions
+	public static final String EXTENSION_CTL = "ctl";
+	public static final String EXTENSION_META = "meta";
+	public static final String EXTENSION_DATA = "dat";
 
 	// Separators 
 	public static final String SEPERATOR_PIPE = "|";
 	public static final String SEPERATOR_TAB = "\t";
 	public static final String SEPERATOR_COMMA = ",";
 	public static final String SEPERATOR_EQUAL = "=";
+	public static final String SEPERATOR_DOT = ".";
 	public static final String FALSE = "N";
 	public static final String EMPTY = "";
 	public static final int ZERO = 0;
@@ -39,11 +48,10 @@ public interface SEConstants {
 	public static final int CTL_FREQUENCY_IDX=22;
 	public static final int CTL_RECORDDELIMITER_IDX=23;
 
-	
-	
-	public static final int ONE =1;
-	
-	
+	public static final String TRIGGER_FILE_NAME_EXT = "TRIGGER_FILE_NAME_EXT";
+
+	public static final String FILE_SEPARATOR = "file.separator";
+
 	public interface AVROConstants{
 		
 		public static final String TYPE="type";

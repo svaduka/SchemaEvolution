@@ -1,6 +1,6 @@
 package com.vodafone.exceptions;
 
-public class SERuntimeException extends Exception {
+public class SERuntimeException extends RuntimeException {
 
 	/**
 	 * 
