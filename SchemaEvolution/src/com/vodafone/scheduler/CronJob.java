@@ -13,9 +13,12 @@ import com.vodafone.constants.SEConstants;
 import com.vodafone.exceptions.SERuntimeException;
 import com.vodafone.pojo.CtlInfo;
 import com.vodafone.util.FileUtil;
+import com.vodafone.util.HDFSUtil;
 import com.vodafone.util.PropertyReader;
 
 public class CronJob extends Configured implements Tool{
+	
+	private long processStartTime=-1l;
 
 	/**
 	 * @param args
@@ -52,6 +55,10 @@ public class CronJob extends Configured implements Tool{
 	public int run(String[] args) throws Exception {
 
 			while (Boolean.TRUE) {
+				
+				processStartTime=System.currentTimeMillis();  // This is the time through out the current process
+				
+				
 				boolean anyFilesProcessed=process(args);
 				if(anyFilesProcessed){
 					System.out.println("Some Files are processed please check in the archive dirctory with current timestamp");
@@ -65,7 +72,7 @@ public class CronJob extends Configured implements Tool{
 	}
 	
 	
-	public static boolean process(final String[] args) throws IOException {
+	public boolean process(final String[] args) throws IOException {
 		
 		boolean isAnyFilesProcessed=Boolean.FALSE;
 		
@@ -97,7 +104,7 @@ public class CronJob extends Configured implements Tool{
 		return isAnyFilesProcessed;
 	}
 
-	public static boolean processIndividualGroupFile(final String lookupFile, final List<String> processFiles) throws IOException
+	public boolean processIndividualGroupFile(final String lookupFile, final List<String> processFiles) throws IOException
 	{
 		boolean isFilesMovedToHDFS=processMoveFilesToHDFS(lookupFile, processFiles);
 		
@@ -122,17 +129,71 @@ public class CronJob extends Configured implements Tool{
 		return Boolean.FALSE;
 	}
 	
-	public static boolean processMoveFilesToHDFS(final String lookupFile, final List<String> processFiles)
-	{
+	public boolean processMoveFilesToHDFS(final String lookupFile, final List<String> processFiles) throws IOException{
+		
+		boolean isFilesMovedTOHDFS=Boolean.TRUE;
+		
+		final Configuration conf=super.getConf();
+		
 		final String hdfsbaseLoc=propReader.getValue(SEConstants.HDFS_BASE_LOC);
+		
+		final String ctlFileWithLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.CTL_FILE_EXT));
+		CtlInfo ctlInfo=FileUtil.parseCtlFile(ctlFileWithLoc);
+		
+		final String hdfsCTLFileLoc=HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo, hdfsbaseLoc, 
+				propReader.getValue(SEConstants.HDFS_CONTROL_FOLDER_NAME), 
+				propReader.getValue(SEConstants.HDFS_INBOX_LOC), 
+				processStartTime);
+		
+		System.out.println("CTL FILE LOC:"+hdfsCTLFileLoc);
+		
+		boolean isFileMoved=HDFSUtil.copyFromLocalToHDFS(ctlFileWithLoc, hdfsCTLFileLoc, conf);
+		
+		if(!isFileMoved){
+//			throw new SERuntimeException("File :"+ctlFileWithLoc+"Unable to move to hdfs location:"+hdfsCTLFileLoc);
+			isFilesMovedTOHDFS=Boolean.FALSE;
+		}
+
+		final String metaFileLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.META_FILE_EXT));
+		final String hdfsMETAFileLoc=HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo, hdfsbaseLoc, 
+				propReader.getValue(SEConstants.HDFS_META_FOLDER_NAME), 
+				propReader.getValue(SEConstants.HDFS_INBOX_LOC), 
+				processStartTime);
+		
+		System.out.println("META FILE LOC:"+hdfsMETAFileLoc);
+		
+		isFileMoved=HDFSUtil.copyFromLocalToHDFS(metaFileLoc, hdfsMETAFileLoc, conf);
+		
+		if(!isFileMoved){
+//			throw new SERuntimeException("File :"+metaFileLoc+"Unable to move to hdfs location:"+hdfsMETAFileLoc);
+			isFilesMovedTOHDFS=Boolean.FALSE;
+		}
+		
+		final String datFileLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.DAT_FILE_EXT));
+		final String hdfsDATFileLoc=HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo, hdfsbaseLoc, 
+				propReader.getValue(SEConstants.HDFS_DATA_FOLDER_NAME), 
+				propReader.getValue(SEConstants.HDFS_INBOX_LOC), 
+				processStartTime);
+		
+		System.out.println("DAT FILE LOC:"+hdfsDATFileLoc);
+		
+		isFileMoved=HDFSUtil.copyFromLocalToHDFS(datFileLoc, hdfsDATFileLoc, conf);
+		
+		if(!isFileMoved){
+//			throw new SERuntimeException("File :"+datFileLoc+"Unable to move to hdfs location:"+hdfsDATFileLoc);
+			isFilesMovedTOHDFS=Boolean.FALSE;
+		}
+		
+		return isFilesMovedTOHDFS;
+	}
+	
+	public  boolean processMoveFilesToArchive(final String lookupFile, final List<String> processFiles) throws IOException{
+		final String archiveLoc=propReader.getValue(SEConstants.ARCHIVE_LOC);
 		return Boolean.FALSE;
 	}
 	
-	public static boolean processMoveFilesToArchive(final String lookupFile, final List<String> processFiles){
-		return Boolean.FALSE;
-	}
-	
-	public static boolean processMoveFilesToFailed(final String lookupFile, final List<String> processFiles){
+	public  boolean processMoveFilesToFailed(final String lookupFile, final List<String> processFiles) throws IOException{
+		final String failedLoc=propReader.getValue(SEConstants.FAILED_LOC);
 		return Boolean.FALSE;
 	}
 }

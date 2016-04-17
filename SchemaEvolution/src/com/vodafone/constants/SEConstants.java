@@ -7,12 +7,22 @@ public interface SEConstants {
 	// Property file keys
 	public static final String BASE_LOC = "BASE_LOC";
 	public static final String INBOX = "INBOX";
-	
+
+	public static final String CTL_FILE_EXT = "CTL_FILE_EXT";
+	public static final String META_FILE_EXT = "META_FILE_EXT";
+	public static final String DAT_FILE_EXT = "DAT_FILE_EXT";
+
+	public static final String HDFS_CONTROL_FOLDER_NAME = "CONTROL_FOLDER_NAME";
+	public static final String HDFS_META_FOLDER_NAME = "META_FOLDER_NAME";
+	public static final String HDFS_DATA_FOLDER_NAME = "DATA_FOLDER_NAME";
+
 	// File Extensions
 	public static final String EXTENSION_CTL = "ctl";
 	public static final String EXTENSION_META = "meta";
 	public static final String EXTENSION_DATA = "dat";
 
+	
+	
 	// Separators 
 	public static final String SEPERATOR_PIPE = "|";
 	public static final String SEPERATOR_TAB = "\t";
@@ -50,9 +60,18 @@ public interface SEConstants {
 
 	public static final String TRIGGER_FILE_NAME_EXT = "TRIGGER_FILE_NAME_EXT";
 
-	public static final String FILE_SEPARATOR = "file.separator";
+	public static final String FILE_SEPARATOR_NAME = "file.separator";
+	public static final String FILE_SEPARATOR=System.getProperty(FILE_SEPARATOR_NAME);
 
 	public static final String HDFS_BASE_LOC = "HDFS_BASE_LOC";
+	public static final String ARCHIVE_LOC = "ARCHIVE";
+	public static final String FAILED_LOC = "FAILED";
+
+	public static final String PROPERTY_FILE_NAME = "PRTS.properties";
+
+	public static final String PROJECT_TIME_FORMAT = "yyyyMMdd";
+
+	public static final String HDFS_INBOX_LOC = "HDFS_INBOX";
 
 	public interface AVROConstants{
 		

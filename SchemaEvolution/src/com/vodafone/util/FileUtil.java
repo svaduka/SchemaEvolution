@@ -238,7 +238,7 @@ public class FileUtil {
 	
 	public static String getFileName(final String fileNameWithExt)
 	{
-		String onlyFileName=fileNameWithExt.substring(fileNameWithExt.lastIndexOf(System.getProperty(SEConstants.FILE_SEPARATOR))+1);
+		String onlyFileName=fileNameWithExt.substring(fileNameWithExt.lastIndexOf(SEConstants.FILE_SEPARATOR)+1);
 		if(onlyFileName==null){
 			onlyFileName=fileNameWithExt;
 		}

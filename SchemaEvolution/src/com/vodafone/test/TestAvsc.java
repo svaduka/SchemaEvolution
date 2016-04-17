@@ -1,17 +1,12 @@
 package com.vodafone.test;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.avro.Schema;
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 
-import com.vodafone.util.AvroUtil;
 import com.vodafone.util.FileUtil;
 
 public class TestAvsc {
