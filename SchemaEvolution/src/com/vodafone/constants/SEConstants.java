@@ -1,7 +1,11 @@
 package com.vodafone.constants;
 
 public interface SEConstants {
+	
+	// Property file keys
+	public static final String BASE_LOC = "BASE_LOC";
 
+	// Separators 
 	public static final String SEPERATOR_PIPE = "|";
 	public static final String SEPERATOR_TAB = "\t";
 	public static final String SEPERATOR_COMMA = ",";

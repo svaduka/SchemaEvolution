@@ -168,4 +168,11 @@ public class FileUtil {
 	return cntrlFile;
 		
 	}
+	
+	public static List<File> getTriggerFiles(final String inboxLoc)
+	{
+		String[] extensions = new String[] {"ctl"};
+		List<File> files = (List<File>)FileUtils.listFiles(new File(inboxLoc), extensions, true);
+		return files; 
+	}
 }

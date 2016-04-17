@@ -18,7 +18,7 @@ public class TestAvsc {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, JSONException {
 
-		final String metaFileLocationWithName="D://Naveen//NaveenWS//20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL.meta";
+		final String metaFileLocationWithName="D:\\Naveen\\Datasets\\SchemaEvolution\\20150317T044228_20156423_ORS_ORSEXTR_ISSUE_FULL.meta";
 		
 		Schema schema=AvroUtil.convertMetaFileToAVSC(metaFileLocationWithName);
 		

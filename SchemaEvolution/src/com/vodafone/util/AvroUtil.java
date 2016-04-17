@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +16,14 @@ import com.vodafone.pojo.ColumnInfo;
 import com.vodafone.pojo.TableMetaData;
 
 public class AvroUtil {
+	
+	public static GenericRecord convertAVSCToAvro(TableMetaData tableMetaData) throws JSONException {
+		
+		Schema schema = convertTableMetaDataToAVSC(tableMetaData);
+		GenericRecord datum = new GenericData.Record(schema);
+		return datum;
+		
+	}
 
 	public static Schema convertMetaFileToAVSC(final String metaFileLocationWithName) throws FileNotFoundException, IOException, JSONException {
 		
