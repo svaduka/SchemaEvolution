@@ -34,7 +34,7 @@ public class FileUtil {
 		
 	}
 
-	public static TableMetaData readMetaFile(String metaFileNameWithLoc) throws FileNotFoundException, IOException {
+	public static TableMetaData parseMetaFile(String metaFileNameWithLoc) throws FileNotFoundException, IOException {
 
 		List<String> lines=readLines(metaFileNameWithLoc);
 		TableMetaData tblMD = null;
@@ -88,7 +88,7 @@ public class FileUtil {
 		return columnInfo;
 	}
 	
-	public CtlInfo parseCtlFile(String ctlFileNameWithLoc) throws IOException {
+	public static CtlInfo parseCtlFile(String ctlFileNameWithLoc) throws IOException {
 		
 		CtlInfo cntrlFile = null;
 		
@@ -251,6 +251,25 @@ public class FileUtil {
 	public boolean moveToArchiveFile(final String inbox_loc,final String archive_loc, final String moveFileLookupName)
 	{
 		return Boolean.FALSE;
+	}
+	
+	public static String getExtFile(final List<String> groupFiles, final String extFile)
+	{
+		String ctlFile=null;
+		for (String file : groupFiles) {
+			if(file.indexOf(("."+extFile))!=-1){
+				ctlFile=file;
+				break;
+			}
+		}
+		return ctlFile;
+	}
+	
+	public static String getExtFile(final String anyFileNameWithExt, final String extFile)
+	{
+		final String onlyFileName=getFileName(anyFileNameWithExt);
+	
+		return onlyFileName.concat(extFile);
 	}
 	
 }

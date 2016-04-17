@@ -11,6 +11,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 import com.vodafone.constants.SEConstants;
 import com.vodafone.exceptions.SERuntimeException;
+import com.vodafone.pojo.CtlInfo;
 import com.vodafone.util.FileUtil;
 import com.vodafone.util.PropertyReader;
 
@@ -74,19 +75,14 @@ public class CronJob extends Configured implements Tool{
 
 		Map<String, List<String>> groupedFiles = FileUtil.groupSimilarFiles(INBOX_LOC,triggerExt);
 		
-//		for (File file : files) {
-//			if(StringUtils.equals(FilenameUtils.getExtension(file.getName()), SEConstants.EXTENSION_CTL)) {
-//				String fileName = StringUtils.substringBefore(file.getName(), SEConstants.SEPERATOR_DOT);
-//				//System.out.println(fileName);
-//			}
-//		}
-		
 		
 		if(groupedFiles!=null && groupedFiles.isEmpty()){
 			
-			for (Map.Entry<String, List<String>> groupFile : groupedFiles.entrySet()) {
+			for (Map.Entry<String, List<String>> groupFile : groupedFiles.entrySet()) 
+			{
 				final String lookupFileName=groupFile.getKey(); 
 				final List<String> processFiles=groupFile.getValue();
+				
 				boolean filesProcessed=processIndividualGroupFile(lookupFileName, processFiles);
 				
 				if(filesProcessed){
@@ -101,8 +97,42 @@ public class CronJob extends Configured implements Tool{
 		return isAnyFilesProcessed;
 	}
 
-	public static boolean processIndividualGroupFile(final String lookupFile, final List<String> processFiles)
+	public static boolean processIndividualGroupFile(final String lookupFile, final List<String> processFiles) throws IOException
 	{
+		boolean isFilesMovedToHDFS=processMoveFilesToHDFS(lookupFile, processFiles);
+		
+		if(isFilesMovedToHDFS)
+		{
+			boolean isFileMovedToArchive=processMoveFilesToArchive(lookupFile, processFiles);
+			if(!isFileMovedToArchive)
+			{
+				throw new SERuntimeException("Process failed to move to archive look up file name:"+lookupFile);
+			}
+			
+		}else{
+			
+			boolean isFilesMovedToFailed=processMoveFilesToFailed(lookupFile, processFiles);
+			if(!isFilesMovedToFailed)
+			{
+				throw new SERuntimeException("Process failed to move to failed look up file name:"+lookupFile);
+			}
+			
+		}
+		
+		return Boolean.FALSE;
+	}
+	
+	public static boolean processMoveFilesToHDFS(final String lookupFile, final List<String> processFiles)
+	{
+		final String hdfsbaseLoc=propReader.getValue(SEConstants.HDFS_BASE_LOC);
+		return Boolean.FALSE;
+	}
+	
+	public static boolean processMoveFilesToArchive(final String lookupFile, final List<String> processFiles){
+		return Boolean.FALSE;
+	}
+	
+	public static boolean processMoveFilesToFailed(final String lookupFile, final List<String> processFiles){
 		return Boolean.FALSE;
 	}
 }

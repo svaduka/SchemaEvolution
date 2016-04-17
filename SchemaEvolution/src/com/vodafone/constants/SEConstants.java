@@ -52,6 +52,8 @@ public interface SEConstants {
 
 	public static final String FILE_SEPARATOR = "file.separator";
 
+	public static final String HDFS_BASE_LOC = "HDFS_BASE_LOC";
+
 	public interface AVROConstants{
 		
 		public static final String TYPE="type";
