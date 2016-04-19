@@ -22,13 +22,19 @@ public class HDFSUtil {
 	 * @throws IOException
 	 */
 	public static boolean copyFromLocalToHDFS(String srcNameWithLoc, String destNameWithLoc, Configuration conf)
-	    	throws IOException{
+   {
+		
+		boolean isFileMovedToHDFS=Boolean.TRUE;
 	    		
 			conf.set("fs.defaultFS", "hdfs://sandbox.hortonworks.com:8020");
+			try {
 			FileSystem hdfs = FileSystem.get(conf);
 	    	hdfs.copyFromLocalFile(new Path(srcNameWithLoc), new Path(destNameWithLoc));
-	    	
-	    	return Boolean.TRUE;
+			}catch (IOException io) 
+			{
+				isFileMovedToHDFS=Boolean.FALSE;
+			}
+	    	return isFileMovedToHDFS;
 	} 
 	
 	/**

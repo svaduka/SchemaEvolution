@@ -271,5 +271,10 @@ public class FileUtil {
 	
 		return onlyFileName.concat(extFile);
 	}
+
+	public static void moveFileToLoc(String fileNameWithLoc,String destinationLoc) throws IOException {
+		FileUtils.moveFileToDirectory(new File(fileNameWithLoc), new File(destinationLoc), Boolean.TRUE);
+		
+	}
 	
 }

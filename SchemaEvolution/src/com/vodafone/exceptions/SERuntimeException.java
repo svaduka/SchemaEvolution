@@ -1,16 +1,20 @@
 package com.vodafone.exceptions;
 
+import com.vodafone.util.LoggerUtil;
+
 public class SERuntimeException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-	private RuntimeException re=null;
+	private final LoggerUtil util=new LoggerUtil(SERuntimeException.class);
 	
 	public SERuntimeException(final String msg){
-		re=new RuntimeException(msg);
+		logMessage(msg);
+		
+	}
+	
+	public void logMessage(final String msg)
+	{
+		util.error(msg);
 	}
 
 }
