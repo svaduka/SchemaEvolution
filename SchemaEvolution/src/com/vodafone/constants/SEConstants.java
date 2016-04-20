@@ -73,6 +73,12 @@ public interface SEConstants {
 
 	public static final String HDFS_INBOX_LOC = "HDFS_INBOX";
 
+	public static final String DESTINATION_FORMAT = "DESTINATION_FORMAT";
+
+	public static final String CLASS_AVRO_FORMAT = "org.avroservice.AvroStorageFormat";
+
+	public static final String DESTINATION_FORMAT_AVRO = "avro"; // Important Note::: The value is in properties file name for  PROPERTY_FILE_NAME key DESTINATION_FORMAT
+
 	public interface AVROConstants{
 		
 		public static final String TYPE="type";

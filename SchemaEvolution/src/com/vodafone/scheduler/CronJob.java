@@ -27,7 +27,7 @@ public class CronJob extends Configured implements Tool{
 	public static void main(String[] args) throws IOException {
 
 		// Read Properties
-		propReader = new PropertyReader("PRTS.properties");
+		propReader = new PropertyReader(SEConstants.PROPERTY_FILE_NAME);
 		boolean propertiesLoaded = propReader.loadProperties();
 
 		if (propertiesLoaded) {
@@ -47,7 +47,6 @@ public class CronJob extends Configured implements Tool{
 
 	}
 	
-	@Override
 	public int run(String[] args) throws Exception {
 
 			while (Boolean.TRUE) {
