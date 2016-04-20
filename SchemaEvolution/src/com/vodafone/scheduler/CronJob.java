@@ -18,7 +18,7 @@ import com.vodafone.util.PropertyReader;
 
 public class CronJob extends Configured implements Tool{
 	
-	//The processtime is constant for all processed files
+	//The process time is constant for all processed files
 	private long processStartTime=-1l;
 
 	//Class used to read the property files
@@ -41,7 +41,6 @@ public class CronJob extends Configured implements Tool{
 					System.out.println("Failed");
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

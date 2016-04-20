@@ -20,12 +20,6 @@ import com.vodafone.pojo.CtlInfo;
 import com.vodafone.pojo.TableMetaData;
 
 public class FileUtil {
-
-	public static void main(String[] args) {
-		
-		
-
-	}
 	
 	public static List<String> readLines(String fileNameWithLoc) throws IOException{
 		
