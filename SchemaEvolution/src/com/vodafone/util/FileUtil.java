@@ -1,23 +1,18 @@
 package com.vodafone.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.vodafone.constants.SEConstants;
-import com.vodafone.pojo.ColumnInfo;
 import com.vodafone.pojo.CtlInfo;
-import com.vodafone.pojo.TableMetaData;
 
 public class FileUtil {
 	
@@ -28,59 +23,59 @@ public class FileUtil {
 		
 	}
 
-	public static TableMetaData parseMetaFile(String metaFileNameWithLoc) throws FileNotFoundException, IOException {
-
-		List<String> lines=readLines(metaFileNameWithLoc);
-		TableMetaData tblMD = null;
-		if(lines!=null && !lines.isEmpty())
-		{
-				
-			final String line=lines.get(SEConstants.ZERO);
-			String[] tokens = StringUtils.splitPreserveAllTokens(line, SEConstants.SEPERATOR_PIPE);
-			
-			tblMD = new TableMetaData();
-			
-			tblMD.setSOURCE_NAME(!StringUtils.isEmpty(tokens[0])?tokens[0]:SEConstants.EMPTY);
-			tblMD.setSCHEMA_NAME(!StringUtils.isEmpty(tokens[1])?tokens[1]:SEConstants.EMPTY);
-			tblMD.setTABLE_NAME(!StringUtils.isEmpty(tokens[2])?tokens[2]:SEConstants.EMPTY);
-			Set<ColumnInfo> hashSet = new HashSet<ColumnInfo>();
-			String strLine=null;
-			for (int i=1;i<lines.size();i++) 
-			{
-				strLine=lines.get(i);
-			ColumnInfo columnInfo = FileUtil.createColumnInfo(strLine);
-			hashSet.add(columnInfo);
-			}
-			tblMD.setColumns(hashSet);
-			
-		}
-		return tblMD;
-		
-	}
-	
-	public static ColumnInfo createColumnInfo(String line) {
-		
-		String[] columns = StringUtils.splitPreserveAllTokens(line, "|");
-		ColumnInfo columnInfo = null;
-		if(!StringUtils.isEmpty(line))
-		{
-			columnInfo=new ColumnInfo();
-				
-			columnInfo.setSourceName(!StringUtils.isEmpty(columns[0])?columns[0]:SEConstants.EMPTY);
-			columnInfo.setSchemaName(!StringUtils.isEmpty(columns[1])?columns[1]:SEConstants.EMPTY);
-			columnInfo.setTableName(!StringUtils.isEmpty(columns[2])?columns[2]:SEConstants.EMPTY);
-			columnInfo.setColumnName(!StringUtils.isEmpty(columns[3])?columns[3]:SEConstants.EMPTY);
-			columnInfo.setDataType(!StringUtils.isEmpty(columns[4])?columns[4]:SEConstants.EMPTY);
-			columnInfo.setDataLength(!StringUtils.isEmpty(columns[5])?Integer.parseInt(columns[5]):SEConstants.ZERO);
-			columnInfo.setDataScale(!StringUtils.isEmpty(columns[6])?columns[6]:SEConstants.EMPTY);
-			columnInfo.setFormat(!StringUtils.isEmpty(columns[7])?columns[7]:SEConstants.EMPTY);
-			columnInfo.setPrimaryKey(StringUtils.isEmpty(columns[8]) 
-									|| StringUtils.equalsIgnoreCase(columns[8], SEConstants.FALSE) ? Boolean.FALSE:Boolean.TRUE);
-			columnInfo.setColumnId(!StringUtils.isEmpty(columns[9])?Integer.parseInt(columns[9]):SEConstants.ZERO);
-									
-		}	
-		return columnInfo;
-	}
+//	public static TableMetaData parseMetaFile(String metaFileNameWithLoc) throws FileNotFoundException, IOException {
+//
+//		List<String> lines=readLines(metaFileNameWithLoc);
+//		TableMetaData tblMD = null;
+//		if(lines!=null && !lines.isEmpty())
+//		{
+//				
+//			final String line=lines.get(SEConstants.ZERO);
+//			String[] tokens = StringUtils.splitPreserveAllTokens(line, SEConstants.SEPERATOR_PIPE);
+//			
+//			tblMD = new TableMetaData();
+//			
+//			tblMD.setSOURCE_NAME(!StringUtils.isEmpty(tokens[0])?tokens[0]:SEConstants.EMPTY);
+//			tblMD.setSCHEMA_NAME(!StringUtils.isEmpty(tokens[1])?tokens[1]:SEConstants.EMPTY);
+//			tblMD.setTABLE_NAME(!StringUtils.isEmpty(tokens[2])?tokens[2]:SEConstants.EMPTY);
+//			Set<ColumnInfo> hashSet = new HashSet<ColumnInfo>();
+//			String strLine=null;
+//			for (int i=1;i<lines.size();i++) 
+//			{
+//				strLine=lines.get(i);
+//			ColumnInfo columnInfo = FileUtil.createColumnInfo(strLine);
+//			hashSet.add(columnInfo);
+//			}
+//			tblMD.setColumns(hashSet);
+//			
+//		}
+//		return tblMD;
+//		
+//	}
+//	
+//	public static ColumnInfo createColumnInfo(String line) {
+//		
+//		String[] columns = StringUtils.splitPreserveAllTokens(line, "|");
+//		ColumnInfo columnInfo = null;
+//		if(!StringUtils.isEmpty(line))
+//		{
+//			columnInfo=new ColumnInfo();
+//				
+//			columnInfo.setSourceName(!StringUtils.isEmpty(columns[0])?columns[0]:SEConstants.EMPTY);
+//			columnInfo.setSchemaName(!StringUtils.isEmpty(columns[1])?columns[1]:SEConstants.EMPTY);
+//			columnInfo.setTableName(!StringUtils.isEmpty(columns[2])?columns[2]:SEConstants.EMPTY);
+//			columnInfo.setColumnName(!StringUtils.isEmpty(columns[3])?columns[3]:SEConstants.EMPTY);
+//			columnInfo.setDataType(!StringUtils.isEmpty(columns[4])?columns[4]:SEConstants.EMPTY);
+//			columnInfo.setDataLength(!StringUtils.isEmpty(columns[5])?Integer.parseInt(columns[5]):SEConstants.ZERO);
+//			columnInfo.setDataScale(!StringUtils.isEmpty(columns[6])?columns[6]:SEConstants.EMPTY);
+//			columnInfo.setFormat(!StringUtils.isEmpty(columns[7])?columns[7]:SEConstants.EMPTY);
+//			columnInfo.setPrimaryKey(StringUtils.isEmpty(columns[8]) 
+//									|| StringUtils.equalsIgnoreCase(columns[8], SEConstants.FALSE) ? Boolean.FALSE:Boolean.TRUE);
+//			columnInfo.setColumnId(!StringUtils.isEmpty(columns[9])?Integer.parseInt(columns[9]):SEConstants.ZERO);
+//									
+//		}	
+//		return columnInfo;
+//	}
 	
 	public static CtlInfo parseCtlFile(String ctlFileNameWithLoc) throws IOException {
 		

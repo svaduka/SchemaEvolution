@@ -25,6 +25,11 @@ public class DataConverter {
 			{
 			if(StringUtils.equalsIgnoreCase(dataFormat, SEConstants.DESTINATION_FORMAT_AVRO))
 			{
+				if(args.length<4)
+				{
+					System.out.println("Java Usage: AvroDataConverterJob /hdfs/path/to/avsc /hdfs/path/to/data/ datadelimiter /hdfs/path/to/output");
+					return;
+				}
 				i=ToolRunner.run(new AvroDataConverterJob(), args);
 			}
 			if(i==0){
