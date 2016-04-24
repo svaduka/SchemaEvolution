@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import com.vodafone.constants.SEConstants;
 import com.vodafone.pojo.CtlInfo;
 
+@Deprecated
 public class FileUtil {
 	
 	public static List<String> readLines(String fileNameWithLoc) throws IOException{
