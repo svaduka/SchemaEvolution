@@ -1,6 +1,6 @@
 package com.vodafone.exceptions;
 
-import com.vodafone.util.LoggerUtil;
+import com.commonservice.util.LoggerUtil;
 
 public class SERuntimeException extends RuntimeException {
 

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.json.JSONException;
 
-import com.vodafone.util.FileUtil;
+import com.commonservice.FileUtil;
 
 public class TestAvsc {
 

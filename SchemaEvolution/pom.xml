@@ -30,5 +30,10 @@
 			<artifactId>json</artifactId>
 			<version>20160212</version>
 		</dependency>
+		<dependency>
+			<groupId>CommonService</groupId>
+			<artifactId>CommonService</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
