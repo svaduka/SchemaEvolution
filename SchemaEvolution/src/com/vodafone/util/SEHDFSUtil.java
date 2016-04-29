@@ -3,40 +3,12 @@ package com.vodafone.util;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 
 import com.vodafone.constants.SEConstants;
 import com.vodafone.pojo.CtlInfo;
 
-public class HDFSUtil {
+public class SEHDFSUtil {
 
-	
-	/**
-	 * 
-	 * @param srcNameWithLoc
-	 * @param destNameWithLoc
-	 * @param conf
-	 * @return
-	 * @throws IOException
-	 */
-	public static boolean copyFromLocalToHDFS(String srcNameWithLoc, String destNameWithLoc, Configuration conf)
-   {
-		
-		boolean isFileMovedToHDFS=Boolean.TRUE;
-	    		
-			conf.set("fs.defaultFS", "hdfs://sandbox.hortonworks.com:8020");
-			try {
-			FileSystem hdfs = FileSystem.get(conf);
-	    	hdfs.copyFromLocalFile(new Path(srcNameWithLoc), new Path(destNameWithLoc));
-			}catch (IOException io) 
-			{
-				isFileMovedToHDFS=Boolean.FALSE;
-			}
-	    	return isFileMovedToHDFS;
-	} 
-	
 	/**
 	 * 
 	 * @param ctlInfo
