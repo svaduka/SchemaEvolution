@@ -8,15 +8,18 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.hdfsservice.util.HDFSUtil;
 
+import com.commonservice.FileUtil;
 import com.vodafone.constants.SEConstants;
 import com.vodafone.exceptions.SERuntimeException;
 import com.vodafone.pojo.CtlInfo;
-import com.vodafone.util.FileUtil;
-import com.vodafone.util.HDFSUtil;
+import com.vodafone.util.SEFileUtil;
+import com.vodafone.util.SEHDFSUtil;
 import com.vodafone.util.PropertyReader;
 
 public class CronJob extends Configured implements Tool{
+	
 	
 	//The process time is constant for all processed files
 	private long processStartTime=-1l;
@@ -56,9 +59,10 @@ public class CronJob extends Configured implements Tool{
 				boolean anyFilesProcessed=process(args);
 				if(anyFilesProcessed){
 					System.out.println("Some Files are processed please check in the archive dirctory with current timestamp");
-				}else{
-					System.out.println("Waiting....");
 				}
+//				else{
+//					System.out.println("Waiting....");
+//				}
 			}
 		
 	
@@ -82,7 +86,7 @@ public class CronJob extends Configured implements Tool{
 		Map<String, List<String>> groupedFiles = FileUtil.groupSimilarFiles(INBOX_LOC,triggerExt);
 		
 		
-		if(groupedFiles!=null && groupedFiles.isEmpty()){
+		if(groupedFiles!=null && !groupedFiles.isEmpty()){
 			
 			for (Map.Entry<String, List<String>> groupFile : groupedFiles.entrySet()) 
 			{
@@ -156,9 +160,9 @@ public class CronJob extends Configured implements Tool{
 		final String ctlFileWithLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.CTL_FILE_EXT));
 		try
 		{
-			CtlInfo ctlInfo = FileUtil.parseCtlFile(ctlFileWithLoc);
+			CtlInfo ctlInfo = SEFileUtil.parseCtlFile(ctlFileWithLoc);
 
-			final String hdfsCTLFileLoc = HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
+			final String hdfsCTLFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader
 									.getValue(SEConstants.HDFS_CONTROL_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
@@ -166,29 +170,29 @@ public class CronJob extends Configured implements Tool{
 
 			System.out.println("CTL FILE LOC:" + hdfsCTLFileLoc);
 
-			isFilesMovedTOHDFS = HDFSUtil.copyFromLocalToHDFS(ctlFileWithLoc,hdfsCTLFileLoc, conf);
+			isFilesMovedTOHDFS = HDFSUtil.writeLocalFileOnHDFS(ctlFileWithLoc,hdfsCTLFileLoc, conf);
 
 			final String metaFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.META_FILE_EXT));
 			
-			final String hdfsMETAFileLoc = HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
+			final String hdfsMETAFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_META_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
 							processStartTime);
 
 			System.out.println("META FILE LOC:" + hdfsMETAFileLoc);
 
-			isFilesMovedTOHDFS = HDFSUtil.copyFromLocalToHDFS(metaFileLoc,hdfsMETAFileLoc, conf);
+			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(metaFileLoc,hdfsMETAFileLoc, conf);
 
 			final String datFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.DAT_FILE_EXT));
 			
-			final String hdfsDATFileLoc = HDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
+			final String hdfsDATFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_DATA_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
 							processStartTime);
 
 			System.out.println("DAT FILE LOC:" + hdfsDATFileLoc);
 
-			isFilesMovedTOHDFS = HDFSUtil.copyFromLocalToHDFS(datFileLoc,hdfsDATFileLoc, conf);
+			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(datFileLoc,hdfsDATFileLoc, conf);
 		}
 		catch (IOException e) {
 			isFilesMovedTOHDFS=Boolean.FALSE;
