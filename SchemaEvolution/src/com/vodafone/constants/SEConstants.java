@@ -79,6 +79,8 @@ public interface SEConstants {
 
 	public static final String DESTINATION_FORMAT_AVRO = "avro"; // Important Note::: The value is in properties file name for  PROPERTY_FILE_NAME key DESTINATION_FORMAT
 
+	public static final String ENABLE_HDFS = "ENABLE_HDFS"; //environment fpr enabling hdfs
+
 	public interface AVROConstants{
 		
 		public static final String TYPE="type";

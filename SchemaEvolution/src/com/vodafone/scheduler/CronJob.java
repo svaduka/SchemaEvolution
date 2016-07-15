@@ -152,6 +152,11 @@ public class CronJob extends Configured implements Tool{
 		
 		boolean isFilesMovedTOHDFS=Boolean.TRUE;
 		
+		boolean isHDFSEnabled=Boolean.parseBoolean(propReader.getValue(SEConstants.ENABLE_HDFS)); //environment property to enable hdfs during project discussion
+		
+		if(isHDFSEnabled)
+		{
+		
 		final Configuration conf=super.getConf();
 		
 		//HDFS base location from property file
@@ -194,8 +199,10 @@ public class CronJob extends Configured implements Tool{
 
 			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(datFileLoc,hdfsDATFileLoc, conf);
 		}
+		
 		catch (IOException e) {
 			isFilesMovedTOHDFS=Boolean.FALSE;
+		}
 		}
 		return isFilesMovedTOHDFS;
 	}
