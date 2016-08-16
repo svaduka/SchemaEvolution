@@ -11,22 +11,40 @@ import org.apache.hadoop.util.ToolRunner;
 import org.hdfsservice.util.HDFSUtil;
 
 import com.commonservice.FileUtil;
+import com.commonservice.util.DateUtil;
+import com.commonservice.util.LoggerUtil;
+import com.controlprocess.constants.Status;
+import com.controlprocess.pojo.ControlProcess;
+import com.controlprocess.pojo.ControlProcessDetail;
+import com.controlprocess.util.ControlProcessUtil;
 import com.vodafone.constants.SEConstants;
 import com.vodafone.exceptions.SERuntimeException;
 import com.vodafone.pojo.CtlInfo;
-import com.vodafone.rdbms.pojo.ControlProcess;
+import com.vodafone.rdbms.dao.HibernateDAO;
+import com.vodafone.util.PropertyReader;
 import com.vodafone.util.SEFileUtil;
 import com.vodafone.util.SEHDFSUtil;
-import com.vodafone.util.PropertyReader;
 
 public class CronJob extends Configured implements Tool{
 	
 	
 	//The process time is constant for all processed files
+	private long cronStartTime=-1l;
 	private long processStartTime=-1l;
 
+	private long cronEndTime=-1l;
+	private long processEndTime=-1l;
+
+	
 	//Class used to read the property files
 	public static PropertyReader propReader = null; 
+	
+	// Control Process audit details
+	
+	private ControlProcess controlProcess=null;
+	private ControlProcessDetail controlProcessDetail=null;
+	
+	LoggerUtil logUtil=new LoggerUtil(this.getClass());
 	
 	public static void main(String[] args) throws IOException {
 
@@ -44,26 +62,49 @@ public class CronJob extends Configured implements Tool{
 				} else {
 					System.out.println("Failed");
 				}
-			} catch (Exception e) {
+			} catch (Exception e) 
+			{
 				e.printStackTrace();
 			}
 		}
 
 	}
 	
-	public int run(String[] args) throws Exception {
+	public int run(String[] args) {
 
 			while (Boolean.TRUE) {
 				
-				processStartTime=System.currentTimeMillis();  // This is the time through out the current process
+				cronStartTime=System.currentTimeMillis();  // This is the time through out the current process
 				
-				boolean anyFilesProcessed=process(args);
-				if(anyFilesProcessed){
-					System.out.println("Some Files are processed please check in the archive dirctory with current timestamp");
+				logUtil.debug("CRON JOB Started at:"+cronStartTime);
+				
+				boolean anyFilesProcessed;
+				try {
+					anyFilesProcessed = process(args);
+					if(anyFilesProcessed){
+						logUtil.debug("Some Files are processed please check in the archive dirctory with current timestamp");
+					}
+//					else{
+//						System.out.println("Waiting....");
+//					}
+				} catch (IOException e) 
+				{
+					cronEndTime=System.currentTimeMillis();
+					
+					logUtil.error("CRON JOB ends at time :"+cronEndTime);
+					
+					processEndTime=System.currentTimeMillis();
+					if(controlProcess!=null)
+					{
+						controlProcess.setEndTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processEndTime));
+					}
+					e.printStackTrace();
+				}finally{
+					if(controlProcess!=null)
+					{
+						HibernateDAO.save(controlProcess);
+					}
 				}
-//				else{
-//					System.out.println("Waiting....");
-//				}
 			}
 		
 	
@@ -87,13 +128,25 @@ public class CronJob extends Configured implements Tool{
 		Map<String, List<String>> groupedFiles = FileUtil.groupSimilarFiles(INBOX_LOC,triggerExt);
 		
 		
-		if(groupedFiles!=null && !groupedFiles.isEmpty()){
-			ControlProcess process=null;
+		if(groupedFiles!=null && !groupedFiles.isEmpty())
+		{
+
+			processStartTime=System.currentTimeMillis();//process started now
+			
+			controlProcess=new ControlProcess();
+			
+			controlProcess.setControlProcessId(ControlProcessUtil.genarateControlProcessId());
+			
+			controlProcess.setStartTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processStartTime));
+			
 			for (Map.Entry<String, List<String>> groupFile : groupedFiles.entrySet()) 
 			{
-				process=new ControlProcess();
+				controlProcessDetail=new ControlProcessDetail();
+				
+				controlProcessDetail.setControlProcess(controlProcess);
 				
 				final String lookupFileName=groupFile.getKey(); 
+				
 				final List<String> processFiles=groupFile.getValue();
 				
 				boolean filesProcessed=processIndividualGroupFile(lookupFileName, processFiles);
@@ -105,8 +158,12 @@ public class CronJob extends Configured implements Tool{
 				}
 			}
 			
+			processEndTime=System.currentTimeMillis();
+			controlProcess.setEndTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processEndTime));
 			isAnyFilesProcessed=Boolean.TRUE;
+			
 		}
+		
 		return isAnyFilesProcessed;
 	}
 	
@@ -166,6 +223,8 @@ public class CronJob extends Configured implements Tool{
 		final String hdfsbaseLoc=propReader.getValue(SEConstants.HDFS_BASE_LOC);
 		
 		final String ctlFileWithLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.CTL_FILE_EXT));
+		controlProcessDetail.setBaseControlFileNameWithLoc(ctlFileWithLoc);
+		
 		try
 		{
 			CtlInfo ctlInfo = SEFileUtil.parseCtlFile(ctlFileWithLoc);
@@ -176,35 +235,59 @@ public class CronJob extends Configured implements Tool{
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
 							processStartTime);
 
-			System.out.println("CTL FILE LOC:" + hdfsCTLFileLoc);
+
+			logUtil.debug("CTL FILE LOC:" + hdfsCTLFileLoc);
 
 			isFilesMovedTOHDFS = HDFSUtil.writeLocalFileOnHDFS(ctlFileWithLoc,hdfsCTLFileLoc, conf);
+			
+			if(isFilesMovedTOHDFS)
+			{
+				controlProcessDetail.setHdfsCtlFileLoc(hdfsCTLFileLoc);
+			}
 
 			final String metaFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.META_FILE_EXT));
+			
+			controlProcessDetail.setBaseMetaFileNameWithLoc(metaFileLoc);
 			
 			final String hdfsMETAFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_META_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
 							processStartTime);
 
-			System.out.println("META FILE LOC:" + hdfsMETAFileLoc);
+			logUtil.debug("META FILE LOC:" + hdfsMETAFileLoc);
 
 			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(metaFileLoc,hdfsMETAFileLoc, conf);
 
+			if(isFilesMovedTOHDFS)
+			{
+				controlProcessDetail.setHdfsMetaFileLoc(hdfsMETAFileLoc);
+			}
 			final String datFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.DAT_FILE_EXT));
+			
+			controlProcessDetail.setBaseDatFileNameWithLoc(datFileLoc);
 			
 			final String hdfsDATFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_DATA_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
 							processStartTime);
 
-			System.out.println("DAT FILE LOC:" + hdfsDATFileLoc);
+			logUtil.debug("DAT FILE LOC:" + hdfsDATFileLoc);
 
 			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(datFileLoc,hdfsDATFileLoc, conf);
+			if(isFilesMovedTOHDFS)
+			{
+				controlProcessDetail.setHdfsDatFileLoc(hdfsDATFileLoc);
+			}
 		}
 		
-		catch (IOException e) {
+		catch (IOException e) 
+		{
 			isFilesMovedTOHDFS=Boolean.FALSE;
+		}
+		if(isFilesMovedTOHDFS)
+		{
+			controlProcessDetail.setStatus(Status.MOVED);
+			
 		}
 		}
 		return isFilesMovedTOHDFS;
