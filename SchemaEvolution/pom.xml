@@ -21,6 +21,16 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>rdbmsservice</groupId>
+			<artifactId>RDBMSService</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>controlprocess</groupId>
+			<artifactId>ControlProcess</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.avroservice</groupId>
 			<artifactId>AvroService</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -45,7 +55,7 @@
 			<artifactId>jdk.tools</artifactId>
 			<version>1.6</version>
 			<scope>system</scope>
-			<!-- <systemPath>C:/Program Files/Java/jdk1.6.0_34/lib/tools.jar</systemPath>  -->
+			<!-- <systemPath>C:/Program Files/Java/jdk1.6.0_34/lib/tools.jar</systemPath> -->
 			<systemPath>/usr/java/jdk1.6.0_32/lib/tools.jar</systemPath>
 		</dependency>
 	</dependencies>

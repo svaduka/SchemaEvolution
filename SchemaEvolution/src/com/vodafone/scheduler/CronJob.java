@@ -14,6 +14,7 @@ import com.commonservice.FileUtil;
 import com.vodafone.constants.SEConstants;
 import com.vodafone.exceptions.SERuntimeException;
 import com.vodafone.pojo.CtlInfo;
+import com.vodafone.rdbms.pojo.ControlProcess;
 import com.vodafone.util.SEFileUtil;
 import com.vodafone.util.SEHDFSUtil;
 import com.vodafone.util.PropertyReader;
@@ -87,9 +88,11 @@ public class CronJob extends Configured implements Tool{
 		
 		
 		if(groupedFiles!=null && !groupedFiles.isEmpty()){
-			
+			ControlProcess process=null;
 			for (Map.Entry<String, List<String>> groupFile : groupedFiles.entrySet()) 
 			{
+				process=new ControlProcess();
+				
 				final String lookupFileName=groupFile.getKey(); 
 				final List<String> processFiles=groupFile.getValue();
 				

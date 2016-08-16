@@ -32,23 +32,25 @@ public class SEHDFSUtil {
 		{
 			hdfsDestinationLoc=new StringBuffer(hdfsBaseLoc);//PROJECT_NAME/MODULE_NAME/ENV(d_dev/t_dev/ p_dev)/RAW/
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
-			hdfsDestinationLoc.append(extension); // CTL /META / DAT
-			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
 			hdfsDestinationLoc.append(ctlInfo.getSourceName()); // SOURCE_NAME
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
 			hdfsDestinationLoc.append(ctlInfo.getSourceSchemaName()); // SOURCE_NAME
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
 			hdfsDestinationLoc.append(ctlInfo.getEntityName()); // ENTITY_NAME
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
+			hdfsDestinationLoc.append(extension); // CTL /META / DAT
+			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
+			if(StringUtils.indexOf(ctlInfo.getDataFileExtension(), extension)!=-1)
+			{
 			hdfsDestinationLoc.append(folder); //INBOX / FAILED / READY / PROCESSED
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
-		
+			}
 			final String timeFormat=DateUtil.convertTimeIntoFormat(intakeTime, SEConstants.PROJECT_TIME_FORMAT);
 			hdfsDestinationLoc.append(timeFormat);// /20161704
 			hdfsDestinationLoc.append(SEConstants.FILE_SEPARATOR);// /
 			
 		}
-		return hdfsDestinationLoc.toString().trim().toUpperCase();
+		return hdfsDestinationLoc.toString().trim();
 	}
 	
 }
