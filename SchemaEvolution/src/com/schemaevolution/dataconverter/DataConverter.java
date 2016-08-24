@@ -6,8 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.util.ToolRunner;
 import org.avroservice.job.AvroDataConverterJob;
 
-import com.vodafone.constants.SEConstants;
-import com.vodafone.util.PropertyReader;
+import com.schemaevolution.constants.SEConstants;
+import com.schemaevolution.util.PropertyReader;
 
 public class DataConverter {
 	

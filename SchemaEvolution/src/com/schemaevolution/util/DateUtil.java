@@ -1,4 +1,4 @@
-package com.vodafone.util;
+package com.schemaevolution.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

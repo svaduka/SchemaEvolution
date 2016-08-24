@@ -1,4 +1,4 @@
-package com.vodafone.scheduler;
+package com.schemaevolution.scheduler;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,13 +17,13 @@ import com.controlprocess.constants.Status;
 import com.controlprocess.pojo.ControlProcess;
 import com.controlprocess.pojo.ControlProcessDetail;
 import com.controlprocess.util.ControlProcessUtil;
-import com.vodafone.constants.SEConstants;
-import com.vodafone.exceptions.SERuntimeException;
-import com.vodafone.pojo.CtlInfo;
+import com.schemaevolution.constants.SEConstants;
+import com.schemaevolution.exceptions.SERuntimeException;
+import com.schemaevolution.pojo.CtlInfo;
+import com.schemaevolution.util.PropertyReader;
+import com.schemaevolution.util.SEFileUtil;
+import com.schemaevolution.util.SEHDFSUtil;
 import com.vodafone.rdbms.dao.HibernateDAO;
-import com.vodafone.util.PropertyReader;
-import com.vodafone.util.SEFileUtil;
-import com.vodafone.util.SEHDFSUtil;
 
 public class CronJob extends Configured implements Tool{
 	
@@ -56,6 +56,7 @@ public class CronJob extends Configured implements Tool{
 
 			try {
 				Configuration conf = new Configuration(Boolean.TRUE);
+				conf.set("fs.defaultFS", "hdfs://localhost.localdomain:8020");
 				int i = ToolRunner.run(conf, new CronJob(), args);
 				if (i == 0) {
 					System.out.println("Success");
@@ -110,7 +111,11 @@ public class CronJob extends Configured implements Tool{
 				}finally{
 					if(controlProcess!=null)
 					{
+						boolean isControlProcessEnabled=Boolean.parseBoolean(propReader.getValue(SEConstants.ENABLE_CONTROL_PROCESS));
+						if(isControlProcessEnabled)
+						{
 						HibernateDAO.save(controlProcess);
+						}
 					}
 				}
 			}
@@ -215,9 +220,19 @@ public class CronJob extends Configured implements Tool{
 	 */
 	public boolean processMoveFilesToHDFS(final String lookupFile, final List<String> processFiles) {
 		
-		boolean isFilesMovedTOHDFS=Boolean.TRUE;
+		boolean isFilesMovedTOHDFS=Boolean.TRUE; //Some Times application disable the moving HDFS for testing
 		
 		boolean isHDFSEnabled=Boolean.parseBoolean(propReader.getValue(SEConstants.ENABLE_HDFS)); //environment property to enable hdfs during project discussion
+
+		final String ctlFileWithLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.CTL_FILE_EXT));
+		controlProcessDetail.setBaseControlFileNameWithLoc(ctlFileWithLoc);
+
+		final String metaFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.META_FILE_EXT));
+		controlProcessDetail.setBaseMetaFileNameWithLoc(metaFileLoc);
+
+		final String datFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.DAT_FILE_EXT));
+		controlProcessDetail.setBaseDatFileNameWithLoc(datFileLoc);
+
 		
 		if(isHDFSEnabled)
 		{
@@ -226,9 +241,6 @@ public class CronJob extends Configured implements Tool{
 		
 		//HDFS base location from property file
 		final String hdfsbaseLoc=propReader.getValue(SEConstants.HDFS_BASE_LOC);
-		
-		final String ctlFileWithLoc=FileUtil.getExtFile(processFiles, propReader.getValue(SEConstants.CTL_FILE_EXT));
-		controlProcessDetail.setBaseControlFileNameWithLoc(ctlFileWithLoc);
 		
 		try
 		{
@@ -250,10 +262,6 @@ public class CronJob extends Configured implements Tool{
 				controlProcessDetail.setHdfsCtlFileLoc(hdfsCTLFileLoc+SEConstants.FILE_SEPARATOR+FileUtil.getOnlyFileName(ctlFileWithLoc));
 			}
 
-			final String metaFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.META_FILE_EXT));
-			
-			controlProcessDetail.setBaseMetaFileNameWithLoc(metaFileLoc);
-			
 			final String hdfsMETAFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_META_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),
@@ -267,10 +275,6 @@ public class CronJob extends Configured implements Tool{
 			{
 				controlProcessDetail.setHdfsMetaFileLoc(hdfsMETAFileLoc+SEConstants.FILE_SEPARATOR+FileUtil.getOnlyFileName(metaFileLoc));
 			}
-			final String datFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.DAT_FILE_EXT));
-			
-			controlProcessDetail.setBaseDatFileNameWithLoc(datFileLoc);
-			
 			final String hdfsDATFileLoc = SEHDFSUtil.createHDFSDestinationLocationForExtensionAndFolder(ctlInfo,hdfsbaseLoc,
 							propReader.getValue(SEConstants.HDFS_DATA_FOLDER_NAME),
 							propReader.getValue(SEConstants.HDFS_INBOX_LOC),

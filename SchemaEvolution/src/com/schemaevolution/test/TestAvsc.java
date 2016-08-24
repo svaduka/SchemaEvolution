@@ -1,4 +1,4 @@
-package com.vodafone.test;
+package com.schemaevolution.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

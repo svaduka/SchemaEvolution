@@ -1,11 +1,11 @@
-package com.vodafone.util;
+package com.schemaevolution.util;
 
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.vodafone.constants.SEConstants;
-import com.vodafone.pojo.CtlInfo;
+import com.schemaevolution.constants.SEConstants;
+import com.schemaevolution.pojo.CtlInfo;
 
 public class SEHDFSUtil {
 

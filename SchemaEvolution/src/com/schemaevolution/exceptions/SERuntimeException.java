@@ -1,4 +1,4 @@
-package com.vodafone.exceptions;
+package com.schemaevolution.exceptions;
 
 import com.commonservice.util.LoggerUtil;
 

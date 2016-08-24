@@ -1,4 +1,4 @@
-package com.vodafone.util;
+package com.schemaevolution.util;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.commonservice.FileUtil;
-import com.vodafone.constants.SEConstants;
-import com.vodafone.pojo.CtlInfo;
+import com.schemaevolution.constants.SEConstants;
+import com.schemaevolution.pojo.CtlInfo;
 
 public class SEFileUtil {
 	

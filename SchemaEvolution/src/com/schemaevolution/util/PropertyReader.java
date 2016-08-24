@@ -1,4 +1,4 @@
-package com.vodafone.util;
+package com.schemaevolution.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.vodafone.constants.SEConstants;
+import com.schemaevolution.constants.SEConstants;
 
 public class PropertyReader {
 	

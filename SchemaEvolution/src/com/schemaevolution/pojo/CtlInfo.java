@@ -1,4 +1,4 @@
-package com.vodafone.pojo;
+package com.schemaevolution.pojo;
 
 public class CtlInfo {
 
