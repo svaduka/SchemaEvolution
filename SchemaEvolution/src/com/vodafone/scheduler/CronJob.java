@@ -82,20 +82,28 @@ public class CronJob extends Configured implements Tool{
 				try {
 					anyFilesProcessed = process(args);
 					if(anyFilesProcessed){
+						if(controlProcess!=null)
+						{
+						controlProcess.setStatus(Status.MOVED);
+						}
 						logUtil.debug("Some Files are processed please check in the archive dirctory with current timestamp");
 					}
-//					else{
-//						System.out.println("Waiting....");
-//					}
+					else{
+						if(controlProcess!=null)
+						{
+						controlProcess.setStatus(Status.FAILED);
+						}
+						System.out.println("Waiting....");
+					}
 				} catch (IOException e) 
 				{
 					cronEndTime=System.currentTimeMillis();
 					
 					logUtil.error("CRON JOB ends at time :"+cronEndTime);
-					
 					processEndTime=System.currentTimeMillis();
 					if(controlProcess!=null)
 					{
+						controlProcess.setStatus(Status.FAILED);
 						controlProcess.setEndTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processEndTime));
 					}
 					e.printStackTrace();
@@ -106,8 +114,6 @@ public class CronJob extends Configured implements Tool{
 					}
 				}
 			}
-		
-	
 		return 0;
 	}
 	
@@ -152,16 +158,15 @@ public class CronJob extends Configured implements Tool{
 				boolean filesProcessed=processIndividualGroupFile(lookupFileName, processFiles);
 				
 				if(filesProcessed){
+					controlProcess.addControlProcessDetail(controlProcessDetail);
 					System.out.println("Files processed for :"+lookupFileName);
 				}else{
 					throw new SERuntimeException("Unable to process for file with lookup Name:"+lookupFileName);
 				}
 			}
-			
 			processEndTime=System.currentTimeMillis();
 			controlProcess.setEndTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processEndTime));
 			isAnyFilesProcessed=Boolean.TRUE;
-			
 		}
 		
 		return isAnyFilesProcessed;
@@ -242,7 +247,7 @@ public class CronJob extends Configured implements Tool{
 			
 			if(isFilesMovedTOHDFS)
 			{
-				controlProcessDetail.setHdfsCtlFileLoc(hdfsCTLFileLoc);
+				controlProcessDetail.setHdfsCtlFileLoc(hdfsCTLFileLoc+SEConstants.FILE_SEPARATOR+FileUtil.getOnlyFileName(ctlFileWithLoc));
 			}
 
 			final String metaFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.META_FILE_EXT));
@@ -260,7 +265,7 @@ public class CronJob extends Configured implements Tool{
 
 			if(isFilesMovedTOHDFS)
 			{
-				controlProcessDetail.setHdfsMetaFileLoc(hdfsMETAFileLoc);
+				controlProcessDetail.setHdfsMetaFileLoc(hdfsMETAFileLoc+SEConstants.FILE_SEPARATOR+FileUtil.getOnlyFileName(metaFileLoc));
 			}
 			final String datFileLoc = FileUtil.getExtFile(processFiles,propReader.getValue(SEConstants.DAT_FILE_EXT));
 			
@@ -276,7 +281,7 @@ public class CronJob extends Configured implements Tool{
 			isFilesMovedTOHDFS =  HDFSUtil.writeLocalFileOnHDFS(datFileLoc,hdfsDATFileLoc, conf);
 			if(isFilesMovedTOHDFS)
 			{
-				controlProcessDetail.setHdfsDatFileLoc(hdfsDATFileLoc);
+				controlProcessDetail.setHdfsDatFileLoc(hdfsDATFileLoc+SEConstants.FILE_SEPARATOR+FileUtil.getOnlyFileName(datFileLoc));
 			}
 		}
 		
@@ -309,6 +314,11 @@ public class CronJob extends Configured implements Tool{
 		final String archiveLoc=propReader.getValue(SEConstants.ARCHIVE_LOC);
 		final String destinationLoc=BASE_LOCATION+SEConstants.FILE_SEPARATOR+archiveLoc;
 
+		//TODO Properly update the information
+		controlProcessDetail.setDestControlFileNameWithLoc(destinationLoc);
+		controlProcessDetail.setDestDatFileNameWithLoc(destinationLoc);
+		controlProcessDetail.setDestMetaFileNameWithLoc(destinationLoc);
+		
 		procesedFiles=processMoveFilesToDestination(destinationLoc, processFiles);
 		return procesedFiles;
 		
@@ -328,6 +338,11 @@ public class CronJob extends Configured implements Tool{
 		final String failedLoc=propReader.getValue(SEConstants.FAILED_LOC);
 		final String destinationLoc=BASE_LOCATION+SEConstants.FILE_SEPARATOR+failedLoc;
 
+		//TODO Properly update the information
+		controlProcessDetail.setDestControlFileNameWithLoc(destinationLoc);
+		controlProcessDetail.setDestDatFileNameWithLoc(destinationLoc);
+		controlProcessDetail.setDestMetaFileNameWithLoc(destinationLoc);
+				
 		procesedFiles=processMoveFilesToDestination(destinationLoc, processFiles);
 		
 		return procesedFiles;
