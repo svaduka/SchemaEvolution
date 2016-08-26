@@ -13,6 +13,7 @@ import org.hdfsservice.util.HDFSUtil;
 import com.commonservice.FileUtil;
 import com.commonservice.util.DateUtil;
 import com.commonservice.util.LoggerUtil;
+import com.controlprocess.constants.ProcessType;
 import com.controlprocess.constants.Status;
 import com.controlprocess.pojo.ControlProcess;
 import com.controlprocess.pojo.ControlProcessDetail;
@@ -85,14 +86,14 @@ public class CronJob extends Configured implements Tool{
 					if(anyFilesProcessed){
 						if(controlProcess!=null)
 						{
-						controlProcess.setStatus(Status.MOVED);
+						controlProcess.setStatus(Status.MOVED.getStringValue());
 						}
 						logUtil.debug("Some Files are processed please check in the archive dirctory with current timestamp");
 					}
 					else{
 						if(controlProcess!=null)
 						{
-						controlProcess.setStatus(Status.FAILED);
+						controlProcess.setStatus(Status.FAILED.getStringValue());
 						}
 						System.out.println("Waiting....");
 					}
@@ -104,7 +105,7 @@ public class CronJob extends Configured implements Tool{
 					processEndTime=System.currentTimeMillis();
 					if(controlProcess!=null)
 					{
-						controlProcess.setStatus(Status.FAILED);
+						controlProcess.setStatus(Status.FAILED.getStringValue());
 						controlProcess.setEndTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processEndTime));
 					}
 					e.printStackTrace();
@@ -112,10 +113,15 @@ public class CronJob extends Configured implements Tool{
 					if(controlProcess!=null)
 					{
 						boolean isControlProcessEnabled=Boolean.parseBoolean(propReader.getValue(SEConstants.ENABLE_CONTROL_PROCESS));
-						if(isControlProcessEnabled)
-						{
+						if(isControlProcessEnabled && controlProcess!=null && controlProcessDetail!=null)
+						{ 
+//						Logger.getRootLogger().getAppender("")
+						controlProcessDetail.setDetailLogFileLoc("SchemaEvolution.log");	
 						HibernateDAO.save(controlProcess);
+//						HibernateDAO.save(controlProcessDetail);
 						}
+						controlProcess=null;
+						controlProcessDetail=null;
 					}
 				}
 			}
@@ -147,6 +153,7 @@ public class CronJob extends Configured implements Tool{
 			controlProcess=new ControlProcess();
 			
 			controlProcess.setControlProcessId(ControlProcessUtil.genarateControlProcessId());
+			controlProcess.setProcessType(ProcessType.CRON.getStringValue());
 			
 			controlProcess.setStartTime(DateUtil.convertTimeMillisIntoSqlTimeStamp(processStartTime));
 			
@@ -155,7 +162,6 @@ public class CronJob extends Configured implements Tool{
 				controlProcessDetail=new ControlProcessDetail();
 				
 				controlProcessDetail.setControlProcess(controlProcess);
-				
 				final String lookupFileName=groupFile.getKey(); 
 				
 				final List<String> processFiles=groupFile.getValue();
@@ -163,7 +169,7 @@ public class CronJob extends Configured implements Tool{
 				boolean filesProcessed=processIndividualGroupFile(lookupFileName, processFiles);
 				
 				if(filesProcessed){
-					controlProcess.addControlProcessDetail(controlProcessDetail);
+					controlProcess.getDetail().add(controlProcessDetail);
 					System.out.println("Files processed for :"+lookupFileName);
 				}else{
 					throw new SERuntimeException("Unable to process for file with lookup Name:"+lookupFileName);
@@ -188,7 +194,10 @@ public class CronJob extends Configured implements Tool{
 	public boolean processIndividualGroupFile(final String lookupFile, final List<String> processFiles) throws IOException
 	{
 		boolean isFilesMovedToHDFS=processMoveFilesToHDFS(lookupFile, processFiles);
+		boolean isEnableFilesMove=Boolean.parseBoolean(propReader.getValue(SEConstants.ENABLE_MOVE_FILES)); //environment property to enable moving files during project discussion
 		
+		if(isEnableFilesMove)
+		{
 		if(isFilesMovedToHDFS)
 		{
 			boolean isFileMovedToArchive=processMoveFilesToArchive(lookupFile, processFiles);
@@ -205,7 +214,7 @@ public class CronJob extends Configured implements Tool{
 			}
 			
 		}
-		
+		}		
 		return Boolean.TRUE;
 	}
 	
@@ -295,7 +304,7 @@ public class CronJob extends Configured implements Tool{
 		}
 		if(isFilesMovedTOHDFS)
 		{
-			controlProcessDetail.setStatus(Status.MOVED);
+			controlProcessDetail.setStatus(Status.MOVED.getStringValue());
 			
 		}
 		}

@@ -83,6 +83,8 @@ public interface SEConstants {
 
 	public static final String ENABLE_CONTROL_PROCESS = "ENABLE_CONTROL_PROCESS";
 
+	public static final String ENABLE_MOVE_FILES = "ENABLE_MOVE_FILES";
+
 	public interface AVROConstants{
 		
 		public static final String TYPE="type";
